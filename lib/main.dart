@@ -8,7 +8,7 @@ import 'package:path_provider/path_provider.dart';
 //import 'package:flutter/widgets.dart';
 import 'package:dio/dio.dart';
 import 'package:provider/provider.dart';
-import './web/web_body.dart';
+import 'webs/web_body.dart';
 import 'profile/profile.dart';
 
 void main() async {
