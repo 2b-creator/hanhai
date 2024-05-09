@@ -1,5 +1,5 @@
 on:
-    pull_request:
+    push:
       branches:
         - dev
 name: Test, Build and Release apk
@@ -8,18 +8,13 @@ jobs:
       name: Build APK
       runs-on: ubuntu-latest
       steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-java@v2
-        with:
-          distribution: 'zulu'
-          java-version: '17'
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.19.6'
-      - run: flutter pub get
-      - run: flutter test
-      - run: flutter build apk --release
-      - uses: actions/upload-artifact@v1
-        with:
-          name: release-apk
-          path: build/app/outputs/apk/release/app-release.apk
+        - name: Clone repository
+          uses: actions/checkout@v4
+        - name: Set up Flutter
+          uses: subosito/flutter-action@v2
+          with:
+            flutter-version: 3.19.0
+        - run: flutter pub get
+        - run: flutter test
+        - run: flutter build apk
+        - run: flutter build appbundle
