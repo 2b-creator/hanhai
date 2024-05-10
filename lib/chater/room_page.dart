@@ -304,7 +304,7 @@ class _LoginWidget extends State<LoginPage> {
                 children: <Widget>[
                   Padding(
                     padding: EdgeInsets.all(textPadding),
-                    child: const Text("Username"),
+                    child: const Text("用户名"),
                   ),
                   Padding(
                     padding:
@@ -312,13 +312,13 @@ class _LoginWidget extends State<LoginPage> {
                     child: TextField(
                       decoration: const InputDecoration(
                           border: UnderlineInputBorder(),
-                          labelText: "Enter your username"),
+                          labelText: "请输入你的用户名"),
                       controller: _usernameTextField,
                     ),
                   ),
                   Padding(
                     padding: EdgeInsets.all(textPadding),
-                    child: const Text("Password"),
+                    child: const Text("密码"),
                   ),
                   Padding(
                     padding:
@@ -326,7 +326,7 @@ class _LoginWidget extends State<LoginPage> {
                     child: TextField(
                       decoration: const InputDecoration(
                           border: UnderlineInputBorder(),
-                          labelText: "Enter your password"),
+                          labelText: "请输入你的密码"),
                       obscureText: true,
                       controller: _passwordTextField,
                     ),

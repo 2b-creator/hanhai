@@ -108,7 +108,7 @@ class _MyHomePageState extends State<MyHomePage> {
       bottomNavigationBar: NavigationBar(
         destinations: const [
           NavigationDestination(icon: Icon(Icons.home), label: "主页"),
-          NavigationDestination(icon: Icon(Icons.chat), label: "联系"),
+          NavigationDestination(icon: Icon(Icons.chat), label: "社区"),
           NavigationDestination(icon: Icon(Icons.person), label: "用户中心"),
         ],
         selectedIndex: currentIndex,
