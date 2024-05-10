@@ -341,7 +341,7 @@ class _LoginWidget extends State<LoginPage> {
                                 : TextButton(
                                     onPressed: _loginEvent,
                                     child: Text(
-                                      "login",
+                                      "登录",
                                       style: GoogleFonts.notoSansSc(
                                           textStyle:
                                               const TextStyle(fontSize: 20)),
