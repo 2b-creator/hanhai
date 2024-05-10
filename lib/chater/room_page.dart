@@ -512,11 +512,11 @@ class _SendRoomPageState extends State<RoomPage> {
                   _count = timeline.events.length;
                   return Column(
                     children: [
-                      Center(
-                        child: TextButton(
-                            onPressed: timeline.requestHistory,
-                            child: const Text('Load more...')),
-                      ),
+                      // Center(
+                      //   child: TextButton(
+                      //       onPressed: timeline.requestHistory,
+                      //       child: const Text('获取之前的信息')),
+                      // ),
                       const Divider(height: 1),
                       Expanded(
                         child: AnimatedList(
@@ -565,25 +565,23 @@ class _SendRoomPageState extends State<RoomPage> {
                                                       .events[i].sender
                                                       .calcDisplayname()),
                                                 ),
-                                                Text(
-                                                  timeline
-                                                      .events[i].originServerTs
-                                                      .toIso8601String(),
-                                                  style: const TextStyle(
-                                                      fontSize: 10),
-                                                ),
+                                                // Text(
+                                                //   timeline
+                                                //       .events[i].originServerTs
+                                                //       .toIso8601String(),
+                                                //   style: const TextStyle(
+                                                //       fontSize: 10),
+                                                // ),
                                               ],
                                             ),
                                             subtitle: timeline.events[i]
                                                     .getDisplayEvent(timeline)
                                                     .content
                                                     .containsKey("displayname")
-                                                ? Text("名称更改为" +
-                                                    timeline.events[i]
+                                                ? Text("名称更改为${timeline.events[i]
                                                         .getDisplayEvent(
                                                             timeline)
-                                                        .content["displayname"]
-                                                        .toString())
+                                                        .content["displayname"]}")
                                                 : timeline.events[i]
                                                             .getDisplayEvent(
                                                                 timeline)
@@ -612,7 +610,7 @@ class _SendRoomPageState extends State<RoomPage> {
                       child: TextField(
                     controller: _sendController,
                     decoration: const InputDecoration(
-                      hintText: 'Send message',
+                      hintText: '发送消息',
                     ),
                   )),
                   IconButton(
