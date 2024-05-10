@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'dart:io';
-import 'package:flutter/services.dart'; 
+import 'package:flutter/services.dart';
 import 'package:hanhai/pdf_viewer.dart';
 import 'package:path_provider/path_provider.dart';
 import '../main.dart';
 
-class WebHomeWidget extends StatefulWidget{
+class WebHomeWidget extends StatefulWidget {
   const WebHomeWidget({super.key});
   @override
   State<WebHomeWidget> createState() => _WebHomeState();
-  
 }
 
-class _WebHomeState extends State<WebHomeWidget>{
-
+class _WebHomeState extends State<WebHomeWidget> {
   bool canPopValue = false;
   String uri = "https://blog.wingsfrontier.top/";
 
@@ -47,25 +45,28 @@ class _WebHomeState extends State<WebHomeWidget>{
     ))
     ..loadRequest(Uri.parse("https://blog.wingsfrontier.top/"));
 
-  
-
   @override
-  Widget build(BuildContext context){
-    return PopScope(
-      onPopInvoked: (didPop) {
-        Future<bool> canBack = controller.canGoBack();
-        canBack.then((value) {
-          if (value) {
-            controller.goBack();
-          } else {
-            SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-          }
-        });
-      },
-      canPop: canPopValue,
-      child: Scaffold(
-        body: WebViewWidget(
-          controller: controller,
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("主页"),
+      ),
+      body: PopScope(
+        onPopInvoked: (didPop) {
+          Future<bool> canBack = controller.canGoBack();
+          canBack.then((value) {
+            if (value) {
+              controller.goBack();
+            } else {
+              SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+            }
+          });
+        },
+        canPop: canPopValue,
+        child: Scaffold(
+          body: WebViewWidget(
+            controller: controller,
+          ),
         ),
       ),
     );

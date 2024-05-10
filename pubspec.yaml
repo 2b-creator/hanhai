@@ -48,6 +48,8 @@ dependencies:
   matrix: ^0.28.1
   flutter_olm: ^1.4.1
   provider: ^6.1.2
+  mailer: ^6.1.0
+  encrypt: ^5.0.3
   # flutter_openssl_crypto: ^0.3.0
 
 dev_dependencies:

@@ -28,7 +28,9 @@ class _ProfileWidgetState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _isLogged ? ProfileEditorPage(client: widget.client) : LoginPageWidget(onLoginSuccess: updateIsLogged),
+      body: _isLogged
+          ? ProfileEditorPage(client: widget.client)
+          : LoginPageWidget(onLoginSuccess: updateIsLogged),
     );
   }
 }
@@ -41,30 +43,106 @@ class ProfileEditorPage extends StatefulWidget {
 }
 
 class _ProfileEditorWidgetState extends State<ProfileEditorPage> {
+  int i = 0;
+  final double paddingWidgets = 20.0;
   Uri? _userid;
+  String? _usernick;
+  final TextEditingController _nicknameController = TextEditingController();
   void _getUserid() async {
     _userid = await widget.client.getAvatarUrl(widget.client.userID!);
+    _usernick = await widget.client.getDisplayName(widget.client.userID!);
+    if (i == 0) {
+      i++;
+      setState(() {});
+    }
   }
+
+  void _setNickname(String displayname, String userId) async {
+    await widget.client.setDisplayName(userId, displayname);
+  }
+
+  void _testEvent() {}
 
   @override
   Widget build(BuildContext context) {
     _getUserid();
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            CircleAvatar(
-              foregroundImage: _userid == null
-                  ? const NetworkImage(
-                      "https://s2.loli.net/2024/05/09/8LuOcAs6tIdUial.png")
-                  : NetworkImage(_userid.toString()),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("用户中心"),
+        backgroundColor: const Color.fromARGB(255, 233, 222, 248),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+                color: Color.fromARGB(255, 233, 222, 248),
+                borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(20),
+                    bottomRight: Radius.circular(20))),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                CircleAvatar(
+                  foregroundImage: _userid?.path == null
+                      ? const NetworkImage(
+                          "https://s2.loli.net/2024/05/09/8LuOcAs6tIdUial.png")
+                      : NetworkImage(
+                          "https://matrix.phosphorus.top/_matrix/media/r0/thumbnail/${_userid!.host}${_userid!.path}?width=2448&height=2448"),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(paddingWidgets),
+                  child: SizedBox(
+                    width: 225,
+                    child: TextField(
+                      decoration: InputDecoration(
+                          labelText: "更改昵称", hintText: _usernick),
+                      controller: _nicknameController,
+                    ),
+                  ),
+                ),
+                IconButton(
+                    onPressed: () {
+                      _setNickname(_nicknameController.text ?? "defualt",
+                          widget.client.userID.toString());
+                    },
+                    icon: const Icon(Icons.save)),
+              ],
             ),
-            const Text("data"),
-          ],
-        ),
-      ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              GestureDetector(
+                child: Container(
+                  child: Padding(
+                    padding: EdgeInsets.all(paddingWidgets),
+                    child: const Text("更改头像"),
+                  ),
+                ),
+                onTap: () {},
+              ),
+              IconButton(
+                  onPressed: _testEvent, icon: const Icon(Icons.arrow_right))
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              GestureDetector(
+                child: Container(
+                  child: Padding(
+                    padding: EdgeInsets.all(paddingWidgets),
+                    child: const Text("修改密码"),
+                  ),
+                ),
+              ),
+              IconButton(onPressed: _testEvent, icon: const Icon(Icons.arrow_right))
+            ],
+          )
+        ],
+      ),
     );
   }
 }

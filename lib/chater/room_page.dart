@@ -255,7 +255,7 @@ class _LoginWidget extends State<LoginPage> {
               AuthenticationUserIdentifier(user: _usernameTextField.text));
 
       Navigator.of(context).pop(client.isLogged());
-
+      await client.joinRoom("!FUzFXJqgOVDbpiBYwZ:matrix.phosphorus.top");
       setState(() {
         _loading = false;
       });
@@ -396,7 +396,7 @@ class _RoomlistPageState extends State<RoomlistPage> {
     final client = Provider.of<Client>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chats'),
+        title: const Text('社区'),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
@@ -411,7 +411,8 @@ class _RoomlistPageState extends State<RoomlistPage> {
           itemBuilder: (context, i) => ListTile(
             leading: CircleAvatar(
               foregroundImage: client.rooms[i].avatar == null
-                  ? const NetworkImage("https://s2.loli.net/2024/05/09/8LuOcAs6tIdUial.png")
+                  ? const NetworkImage(
+                      "https://s2.loli.net/2024/05/09/8LuOcAs6tIdUial.png")
                   : NetworkImage(client.rooms[i].avatar!
                       .getThumbnail(
                         client,
@@ -526,59 +527,75 @@ class _SendRoomPageState extends State<RoomPage> {
                                       .events[i].relationshipEventId !=
                                   null
                               ? Container()
-                              : ScaleTransition(
-                                  scale: animation,
-                                  child: Opacity(
-                                    opacity: timeline.events[i].status.isSent
-                                        ? 1
-                                        : 0.5,
-                                    child: ListTile(
-                                      leading: CircleAvatar(
-                                        foregroundImage: timeline.events[i]
-                                                    .sender.avatarUrl ==
-                                                null
-                                            ? const NetworkImage(
-                                                "https://s2.loli.net/2024/05/09/8LuOcAs6tIdUial.png")
-                                            : NetworkImage(timeline
-                                                .events[i].sender.avatarUrl!
-                                                .getThumbnail(
-                                                  widget.room.client,
-                                                  width: 56,
-                                                  height: 56,
-                                                )
-                                                .toString()),
+                              : timeline.events[i].body.startsWith("m.") &&
+                                      timeline.events[i].body != "m.room.avatar"&&
+                                      timeline.events[i].body != "m.room.member"
+                                  ? Container()
+                                  : ScaleTransition(
+                                      scale: animation,
+                                      child: Opacity(
+                                        opacity:
+                                            timeline.events[i].status.isSent
+                                                ? 1
+                                                : 0.5,
+                                        child: ListTile(
+                                            leading: CircleAvatar(
+                                              foregroundImage: timeline
+                                                          .events[i]
+                                                          .sender
+                                                          .avatarUrl ==
+                                                      null
+                                                  ? const NetworkImage(
+                                                      "https://s2.loli.net/2024/05/09/8LuOcAs6tIdUial.png")
+                                                  : NetworkImage(timeline
+                                                      .events[i]
+                                                      .sender
+                                                      .avatarUrl!
+                                                      .getThumbnail(
+                                                        widget.room.client,
+                                                        width: 56,
+                                                        height: 56,
+                                                      )
+                                                      .toString()),
+                                            ),
+                                            title: Row(
+                                              children: [
+                                                Expanded(
+                                                  child: Text(timeline
+                                                      .events[i].sender
+                                                      .calcDisplayname()),
+                                                ),
+                                                Text(
+                                                  timeline
+                                                      .events[i].originServerTs
+                                                      .toIso8601String(),
+                                                  style: const TextStyle(
+                                                      fontSize: 10),
+                                                ),
+                                              ],
+                                            ),
+                                            subtitle: timeline.events[i]
+                                                    .getDisplayEvent(timeline)
+                                                    .content
+                                                    .containsKey("displayname")
+                                                ? Text("名称更改为" +
+                                                    timeline.events[i]
+                                                        .getDisplayEvent(
+                                                            timeline)
+                                                        .content["displayname"]
+                                                        .toString())
+                                                : timeline.events[i]
+                                                            .getDisplayEvent(
+                                                                timeline)
+                                                            .body ==
+                                                        "m.room.avatar"
+                                                    ? const Text("更新了头像")
+                                                    : Text(timeline.events[i]
+                                                        .getDisplayEvent(
+                                                            timeline)
+                                                        .body)),
                                       ),
-                                      title: Row(
-                                        children: [
-                                          Expanded(
-                                            child: Text(timeline
-                                                .events[i].sender
-                                                .calcDisplayname()),
-                                          ),
-                                          Text(
-                                            timeline.events[i].originServerTs
-                                                .toIso8601String(),
-                                            style:
-                                                const TextStyle(fontSize: 10),
-                                          ),
-                                        ],
-                                      ),
-                                      subtitle: timeline.events[i]
-                                              .getDisplayEvent(timeline)
-                                              .body
-                                              .startsWith("m.room.member")
-                                          ? const Text("加入了群聊")
-                                          : timeline.events[i]
-                                                  .getDisplayEvent(timeline)
-                                                  .body
-                                                  .startsWith("m.")
-                                              ? const Text("更改了群聊属性")
-                                              : Text(timeline.events[i]
-                                                  .getDisplayEvent(timeline)
-                                                  .body),
                                     ),
-                                  ),
-                                ),
                         ),
                       ),
                     ],
