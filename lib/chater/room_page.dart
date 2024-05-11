@@ -627,6 +627,7 @@ class _SendRoomPageState extends State<RoomPage> {
                                                 ? 1
                                                 : 0.5,
                                         child: ListTile(
+                                            onTap: () {},
                                             leading: CircleAvatar(
                                               foregroundImage: timeline
                                                           .events[i]
