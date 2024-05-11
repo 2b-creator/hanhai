@@ -66,12 +66,12 @@ class _changeAvatar extends State<ProfileEditorPage> {
 
   void _changeAvatarChoser() async {
     final ImagePicker picker = ImagePicker();
-    final LostDataResponse response = await picker.retrieveLostData();
-    if (response.isEmpty) {
+    final XFile? response = await picker.pickImage(source: ImageSource.gallery);
+    if (response==null) {
       return;
     }
-    final List<XFile>? files = response.files;
-    String filePath = files![0].path;
+    //final List<XFile>? files = response.files;
+    String filePath = response.path;
     Uint8List uint8list = await File(filePath).readAsBytes();
     widget.client.setAvatar(MatrixImageFile(bytes: uint8list, name: widget.client.clientName.toString()));
   }
