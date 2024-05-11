@@ -261,6 +261,7 @@ class _RegisterWidget extends State<RegisterPage> {
                     child: TextField(
                       decoration: const InputDecoration(
                           border: UnderlineInputBorder(), labelText: "输入你的密码"),
+                      obscureText: true,
                       controller: _passwordTextField,
                     ),
                   ),
@@ -276,6 +277,7 @@ class _RegisterWidget extends State<RegisterPage> {
                           border: const UnderlineInputBorder(),
                           labelText: "重新输入你的密码",
                           errorText: _twoPwdMatch ? null : "两次密码不匹配"),
+                      obscureText: true,
                       onChanged: (value) {
                         if (_passwordTextField.text != value) {
                           setState(() {
@@ -342,10 +344,9 @@ class _LoginWidget extends State<LoginPage> {
       var spaceProperty = await client
           .getSpaceHierarchy(("!BJiNaszkjLhKvKhNhR:matrix.phosphorus.top"));
       var rls = spaceProperty.rooms;
-      for(int i=0;i<rls.length;i++){
+      for (int i = 0; i < rls.length; i++) {
         await client.joinRoom(rls[i].roomId);
       }
-      
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
