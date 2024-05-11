@@ -51,6 +51,7 @@ dependencies:
   mailer: ^6.1.0
   encrypt: ^5.0.3
   image_picker: ^1.1.1
+  flutter_markdown: ^0.7.1
   # flutter_openssl_crypto: ^0.3.0
 
 dev_dependencies:
