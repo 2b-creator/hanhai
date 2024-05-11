@@ -4,6 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:matrix/matrix.dart';
 import 'package:provider/provider.dart';
+import 'auth.dart';
+import 'package:dio/dio.dart';
+
+class HttpHandlerIm {
+  static String host = "https://matrix.phosphorus.top";
+  static String emailRec = "/_matrix/client/v3/register/email/requestToken";
+  static String reg = "/_matrix/client/v3/register";
+}
 
 class RoomInterface extends StatefulWidget {
   const RoomInterface({super.key, required this.client});
@@ -47,7 +55,7 @@ class LoginPageWidget extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPageWidget> {
-  final double buttonPadding = 12;
+  final double buttonPadding = 5;
   bool isLogged = false;
 
   void _navReg() {
@@ -120,16 +128,55 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterWidget extends State<RegisterPage> {
-  final double textPadding = 12;
+  final double textPadding = 5;
+  final TextEditingController _usernameTextField = TextEditingController();
+  bool _usernameInvalid = false;
+  bool _emailFormatValitation = true;
+  bool _passwdStrong = true;
+  final TextEditingController _passwordTextField = TextEditingController();
+  bool _twoPwdMatch = false;
+  bool _waitingForCallback = false;
+  final TextEditingController _emailTextField = TextEditingController();
+  int attempt = 0;
 
-  void _regEvent() {
-    //TODO
+  void _regEvent(String emailAddr) async {
+    setState(() {
+      _waitingForCallback = true;
+    });
+    attempt++;
+    var dio = Dio();
+    var data = {
+      "client_secret": "onZR8j57RKTTU8wM",
+      "email": emailAddr,
+      "send_attempt": attempt
+    };
+    var resp =
+        await dio.post(HttpHandlerIm.host + HttpHandlerIm.emailRec, data: data);
+    String serverSid = resp.data["sid"];
+    _waitingForCallback = false;
+    if (resp.statusCode == 200) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (build) => RegEmailAuthWidget(
+                    sid: serverSid,
+                    username: _usernameTextField.text,
+                    password: _passwordTextField.text,
+                  )));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(resp.data.toString()),
+        ),
+      );
+    }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: const Text("Registration"),
+          title: const Text("注册"),
           leading: BackButton(
             onPressed: () {
               Navigator.pop(context);
@@ -138,7 +185,7 @@ class _RegisterWidget extends State<RegisterPage> {
       body: Center(
         child: Container(
           width: 350,
-          height: 600,
+          height: 500,
           decoration: BoxDecoration(
               borderRadius: const BorderRadius.all(Radius.circular(10)),
               color: const Color.fromARGB(255, 243, 237, 247),
@@ -157,63 +204,97 @@ class _RegisterWidget extends State<RegisterPage> {
                 children: <Widget>[
                   Padding(
                     padding: EdgeInsets.all(textPadding),
-                    child: const Text("Username"),
+                    child: const Text("用户名"),
                   ),
                   Padding(
                     padding:
                         EdgeInsets.only(left: textPadding, right: textPadding),
-                    child: const TextField(
+                    child: TextField(
                       decoration: InputDecoration(
-                          border: UnderlineInputBorder(),
-                          labelText: "Enter your username"),
+                          border: const UnderlineInputBorder(),
+                          labelText: "请输入您的用户名",
+                          errorText: _usernameInvalid
+                              ? "非法用户名，必须以小写字母开头，后面均为小写字母\n或数字"
+                              : null),
+                      controller: _usernameTextField,
+                      onChanged: (value) {
+                        AuthUsernameOrPasswd authUsernameOrPasswd =
+                            AuthUsernameOrPasswd();
+                        setState(() {
+                          _usernameInvalid =
+                              !authUsernameOrPasswd.isValidUsername(value);
+                        });
+                      },
                     ),
                   ),
                   Padding(
                     padding: EdgeInsets.all(textPadding),
-                    child: const Text("Email"),
+                    child: const Text("电子邮件"),
                   ),
                   Padding(
                     padding:
                         EdgeInsets.only(left: textPadding, right: textPadding),
-                    child: const TextField(
+                    child: TextField(
                       decoration: InputDecoration(
                           border: UnderlineInputBorder(),
-                          labelText: "Enter your email"),
+                          labelText: "输入你的电子邮箱地址",
+                          errorText:
+                              _emailFormatValitation ? null : "错误的电子邮箱地址"),
+                      controller: _emailTextField,
+                      onChanged: (value) {
+                        AuthUsernameOrPasswd authUsernameOrPasswd =
+                            AuthUsernameOrPasswd();
+                        setState(() {
+                          _emailFormatValitation =
+                              authUsernameOrPasswd.isValidEmail(value);
+                        });
+                      },
                     ),
                   ),
                   Padding(
                     padding: EdgeInsets.all(textPadding),
-                    child: const Text("Password"),
+                    child: const Text("密码"),
                   ),
                   Padding(
                     padding:
                         EdgeInsets.only(left: textPadding, right: textPadding),
-                    child: const TextField(
-                      decoration: InputDecoration(
-                          border: UnderlineInputBorder(),
-                          labelText: "Enter your password"),
+                    child: TextField(
+                      decoration: const InputDecoration(
+                          border: UnderlineInputBorder(), labelText: "输入你的密码"),
+                      controller: _passwordTextField,
                     ),
                   ),
                   Padding(
                     padding: EdgeInsets.all(textPadding),
-                    child: const Text("Password confirm"),
+                    child: const Text("确认密码"),
                   ),
                   Padding(
                     padding:
                         EdgeInsets.only(left: textPadding, right: textPadding),
-                    child: const TextField(
+                    child: TextField(
                       decoration: InputDecoration(
-                          border: UnderlineInputBorder(),
-                          labelText: "reEnter your password"),
+                          border: const UnderlineInputBorder(),
+                          labelText: "重新输入你的密码",
+                          errorText: _twoPwdMatch ? null : "两次密码不匹配"),
+                      onChanged: (value) {
+                        if (_passwordTextField.text != value) {
+                          setState(() {
+                            _twoPwdMatch = false;
+                          });
+                        }
+                        _twoPwdMatch = true;
+                      },
                     ),
                   ),
                   Padding(
                     padding: EdgeInsets.all(textPadding),
                     child: Center(
                       child: TextButton(
-                          onPressed: _regEvent,
+                          onPressed: () {
+                            _regEvent(_emailTextField.text);
+                          },
                           child: Text(
-                            "register",
+                            "注册",
                             style: GoogleFonts.notoSansSc(
                                 textStyle: const TextStyle(fontSize: 20)),
                           )),
@@ -253,12 +334,18 @@ class _LoginWidget extends State<LoginPage> {
           password: _passwordTextField.text,
           identifier:
               AuthenticationUserIdentifier(user: _usernameTextField.text));
-
-      Navigator.of(context).pop(client.isLogged());
-      await client.joinRoom("!FUzFXJqgOVDbpiBYwZ:matrix.phosphorus.top");
       setState(() {
         _loading = false;
       });
+      Navigator.of(context).pop(client.isLogged());
+      await client.joinRoom("!BJiNaszkjLhKvKhNhR:matrix.phosphorus.top");
+      var spaceProperty = await client
+          .getSpaceHierarchy(("!BJiNaszkjLhKvKhNhR:matrix.phosphorus.top"));
+      var rls = spaceProperty.rooms;
+      for(int i=0;i<rls.length;i++){
+        await client.joinRoom(rls[i].roomId);
+      }
+      
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -325,8 +412,7 @@ class _LoginWidget extends State<LoginPage> {
                         EdgeInsets.only(left: textPadding, right: textPadding),
                     child: TextField(
                       decoration: const InputDecoration(
-                          border: UnderlineInputBorder(),
-                          labelText: "请输入你的密码"),
+                          border: UnderlineInputBorder(), labelText: "请输入你的密码"),
                       obscureText: true,
                       controller: _passwordTextField,
                     ),
@@ -383,7 +469,7 @@ class _RoomlistPageState extends State<RoomlistPage> {
         builder: (_) => RoomPage(room: room),
       ),
     );
-    _addRoom("!FUzFXJqgOVDbpiBYwZ:matrix.phosphorus.top");
+    //_addRoom("!FUzFXJqgOVDbpiBYwZ:matrix.phosphorus.top");
   }
 
   void _addRoom(String roomIdOrAlias) async {
@@ -528,7 +614,8 @@ class _SendRoomPageState extends State<RoomPage> {
                                   null
                               ? Container()
                               : timeline.events[i].body.startsWith("m.") &&
-                                      timeline.events[i].body != "m.room.avatar"&&
+                                      timeline.events[i].body !=
+                                          "m.room.avatar" &&
                                       timeline.events[i].body != "m.room.member"
                                   ? Container()
                                   : ScaleTransition(
@@ -578,10 +665,8 @@ class _SendRoomPageState extends State<RoomPage> {
                                                     .getDisplayEvent(timeline)
                                                     .content
                                                     .containsKey("displayname")
-                                                ? Text("名称更改为${timeline.events[i]
-                                                        .getDisplayEvent(
-                                                            timeline)
-                                                        .content["displayname"]}")
+                                                ? Text(
+                                                    "名称更改为${timeline.events[i].getDisplayEvent(timeline).content["displayname"]}")
                                                 : timeline.events[i]
                                                             .getDisplayEvent(
                                                                 timeline)

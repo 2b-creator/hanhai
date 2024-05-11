@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart';
 import './../chater/room_page.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'dart:typed_data';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key, required this.client});
@@ -39,10 +42,10 @@ class ProfileEditorPage extends StatefulWidget {
   const ProfileEditorPage({super.key, required this.client});
   final Client client;
   @override
-  State<ProfileEditorPage> createState() => _ProfileEditorWidgetState();
+  State<ProfileEditorPage> createState() => _changeAvatar();
 }
 
-class _ProfileEditorWidgetState extends State<ProfileEditorPage> {
+class _changeAvatar extends State<ProfileEditorPage> {
   int i = 0;
   final double paddingWidgets = 20.0;
   Uri? _userid;
@@ -61,7 +64,22 @@ class _ProfileEditorWidgetState extends State<ProfileEditorPage> {
     await widget.client.setDisplayName(userId, displayname);
   }
 
-  void _testEvent() {}
+  void _changeAvatarChoser() async {
+    final ImagePicker picker = ImagePicker();
+    final LostDataResponse response = await picker.retrieveLostData();
+    if (response.isEmpty) {
+      return;
+    }
+    final List<XFile>? files = response.files;
+    String filePath = files![0].path;
+    Uint8List uint8list = await File(filePath).readAsBytes();
+    widget.client.setAvatar(MatrixImageFile(bytes: uint8list, name: widget.client.clientName.toString()));
+  }
+
+  void _changePasswd(){
+    //TODO
+    
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -124,7 +142,8 @@ class _ProfileEditorWidgetState extends State<ProfileEditorPage> {
                 onTap: () {},
               ),
               IconButton(
-                  onPressed: _testEvent, icon: const Icon(Icons.arrow_right))
+                  onPressed: _changeAvatarChoser,
+                  icon: const Icon(Icons.arrow_right))
             ],
           ),
           Row(
@@ -138,7 +157,9 @@ class _ProfileEditorWidgetState extends State<ProfileEditorPage> {
                   ),
                 ),
               ),
-              IconButton(onPressed: _testEvent, icon: const Icon(Icons.arrow_right))
+              IconButton(
+                  onPressed: _changePasswd,
+                  icon: const Icon(Icons.arrow_right))
             ],
           )
         ],
