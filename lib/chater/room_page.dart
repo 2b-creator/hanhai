@@ -1,6 +1,8 @@
 //import 'dart:js_interop';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:matrix/matrix.dart';
@@ -551,13 +553,17 @@ class RoomPage extends StatefulWidget {
   _SendRoomPageState createState() => _SendRoomPageState();
 }
 
-class StaticTimeline{
+class StaticTimeline {
   static Timeline? timeline;
 }
+
 class _SendRoomPageState extends State<RoomPage> {
   late final Future<Timeline> _timelineFuture;
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
+  final GlobalKey<AnimatedListState> _avatarKey =
+      GlobalKey<AnimatedListState>();
   int _count = 0;
+  bool _sender = true;
 
   @override
   void initState() {
@@ -567,12 +573,14 @@ class _SendRoomPageState extends State<RoomPage> {
     }, onInsert: (i) {
       print('on insert! $i');
       _listKey.currentState?.insertItem(i);
+      _avatarKey.currentState?.setState(() {});
       _count++;
     }, onRemove: (i) {
       print('On remove $i');
       _count--;
       _listKey.currentState?.removeItem(i, (_, __) => const ListTile());
     }, onUpdate: () {
+      //_listKey.currentState?.setState(() {});
       print('On update');
     });
     super.initState();
@@ -583,6 +591,9 @@ class _SendRoomPageState extends State<RoomPage> {
   void _send() {
     widget.room.sendTextEvent(_sendController.text.trim());
     _sendController.clear();
+    setState(() {
+      _sender = false;
+    });
   }
 
   @override
@@ -598,7 +609,7 @@ class _SendRoomPageState extends State<RoomPage> {
               child: FutureBuilder<Timeline>(
                 future: _timelineFuture,
                 builder: (context, snapshot) {
-                  final timeline = snapshot.data;
+                  var timeline = snapshot.data;
                   StaticTimeline.timeline = timeline;
                   if (timeline == null) {
                     return const Center(
@@ -690,29 +701,69 @@ class _SendRoomPageState extends State<RoomPage> {
                                                           .body ==
                                                       "m.room.avatar"
                                                   ? const Text("更新了头像")
-                                                  : Markdown(
-                                                      data: timeline.events[i]
+                                                  // : Markdown(
+                                                  //     data: timeline.events[i]
+                                                  //         .getDisplayEvent(
+                                                  //             timeline)
+                                                  //         .body,
+                                                  //     physics:
+                                                  //         const NeverScrollableScrollPhysics(),
+                                                  //     shrinkWrap: true,
+                                                  //   )
+                                                  : timeline.events[i]
                                                           .getDisplayEvent(
                                                               timeline)
-                                                          .body,
-                                                      physics:
-                                                          const NeverScrollableScrollPhysics(),
-                                                      shrinkWrap: true,
-                                                    ),
+                                                          .body
+                                                          .startsWith(".")
+                                                      ? Markdown(
+                                                          data: timeline
+                                                              .events[i]
+                                                              .getDisplayEvent(
+                                                                  timeline)
+                                                              .body,
+                                                          physics:
+                                                              const NeverScrollableScrollPhysics(),
+                                                          shrinkWrap: true,
+                                                        )
+                                                      : Text(timeline.events[i]
+                                                          .getDisplayEvent(
+                                                              timeline)
+                                                          .body),
                                         ),
                                       ),
                                     ),
                         ),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Container(
-                            height: 20,
-                            child: Text(StaticTimeline.timeline!.events[0].getDisplayEvent(StaticTimeline.timeline!).receipts.toString()),
-                          )
-                        ],
-                      ),
+                      Container(
+                        key: _avatarKey,
+                        height: 20,
+                        child: _sender
+                            ? AnimatedList(
+                                initialItemCount:
+                                    timeline.events[0].receipts.length,
+                                scrollDirection: Axis.horizontal,
+                                itemBuilder: ((context, index, animation) =>
+                                    ScaleTransition(
+                                        scale: animation,
+                                        child: timeline.events[0].receipts
+                                                    .length ==
+                                                0
+                                            ? null
+                                            : CircleAvatar(
+                                                foregroundImage: NetworkImage(
+                                                    timeline
+                                                        .events[0]
+                                                        .receipts[index]
+                                                        .user
+                                                        .avatarUrl!
+                                                        .getThumbnail(
+                                                          widget.room.client,
+                                                          width: 100,
+                                                          height: 100,
+                                                        )
+                                                        .toString())))))
+                            : null,
+                      )
                     ],
                   );
                 },
@@ -725,6 +776,7 @@ class _SendRoomPageState extends State<RoomPage> {
                 children: [
                   Expanded(
                       child: TextField(
+                    maxLines: null,
                     controller: _sendController,
                     decoration: const InputDecoration(
                       hintText: '发送消息',
