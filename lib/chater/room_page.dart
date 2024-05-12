@@ -1,6 +1,7 @@
 //import 'dart:js_interop';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:matrix/matrix.dart';
 import 'package:provider/provider.dart';
@@ -450,6 +451,8 @@ class RoomlistPage extends StatefulWidget {
 }
 
 class _RoomlistPageState extends State<RoomlistPage> {
+  int _hasreadedCounts = 0;
+
   void _logout() async {
     final client = Provider.of<Client>(context, listen: false);
     await client.logout();
@@ -526,7 +529,9 @@ class _RoomlistPageState extends State<RoomlistPage> {
               client.rooms[i].lastEvent?.body ?? 'No messages',
               maxLines: 1,
             ),
-            onTap: () => _join(client.rooms[i]),
+            onTap: () async {
+              _join(client.rooms[i]);
+            },
           ),
         ),
       ),
@@ -546,6 +551,9 @@ class RoomPage extends StatefulWidget {
   _SendRoomPageState createState() => _SendRoomPageState();
 }
 
+class StaticTimeline{
+  static Timeline? timeline;
+}
 class _SendRoomPageState extends State<RoomPage> {
   late final Future<Timeline> _timelineFuture;
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
@@ -591,6 +599,7 @@ class _SendRoomPageState extends State<RoomPage> {
                 future: _timelineFuture,
                 builder: (context, snapshot) {
                   final timeline = snapshot.data;
+                  StaticTimeline.timeline = timeline;
                   if (timeline == null) {
                     return const Center(
                       child: CircularProgressIndicator.adaptive(),
@@ -599,11 +608,14 @@ class _SendRoomPageState extends State<RoomPage> {
                   _count = timeline.events.length;
                   return Column(
                     children: [
-                      // Center(
-                      //   child: TextButton(
-                      //       onPressed: timeline.requestHistory,
-                      //       child: const Text('获取之前的信息')),
-                      // ),
+                      Center(
+                        child: TextButton(
+                            onPressed: () {
+                              //timeline.requestHistory;
+                              timeline.setReadMarker();
+                            },
+                            child: const Text('标为已读')),
+                      ),
                       const Divider(height: 1),
                       Expanded(
                         child: AnimatedList(
@@ -627,61 +639,79 @@ class _SendRoomPageState extends State<RoomPage> {
                                                 ? 1
                                                 : 0.5,
                                         child: ListTile(
-                                            onTap: () {},
-                                            leading: CircleAvatar(
-                                              foregroundImage: timeline
-                                                          .events[i]
-                                                          .sender
-                                                          .avatarUrl ==
-                                                      null
-                                                  ? const NetworkImage(
-                                                      "https://s2.loli.net/2024/05/09/8LuOcAs6tIdUial.png")
-                                                  : NetworkImage(timeline
-                                                      .events[i]
-                                                      .sender
-                                                      .avatarUrl!
-                                                      .getThumbnail(
-                                                        widget.room.client,
-                                                        width: 56,
-                                                        height: 56,
-                                                      )
-                                                      .toString()),
-                                            ),
-                                            title: Row(
-                                              children: [
-                                                Expanded(
-                                                  child: Text(timeline
-                                                      .events[i].sender
-                                                      .calcDisplayname()),
+                                          onTap: () {},
+                                          leading: CircleAvatar(
+                                            foregroundImage: timeline.events[i]
+                                                        .sender.avatarUrl ==
+                                                    null
+                                                ? const NetworkImage(
+                                                    "https://s2.loli.net/2024/05/09/8LuOcAs6tIdUial.png")
+                                                : NetworkImage(timeline
+                                                    .events[i].sender.avatarUrl!
+                                                    .getThumbnail(
+                                                      widget.room.client,
+                                                      width: 56,
+                                                      height: 56,
+                                                    )
+                                                    .toString()),
+                                          ),
+                                          title: Row(
+                                            children: [
+                                              Expanded(
+                                                child: Text(
+                                                  timeline.events[i].sender
+                                                      .calcDisplayname(),
+                                                  style: const TextStyle(
+                                                      fontSize: 10),
                                                 ),
-                                                // Text(
-                                                //   timeline
-                                                //       .events[i].originServerTs
-                                                //       .toIso8601String(),
-                                                //   style: const TextStyle(
-                                                //       fontSize: 10),
-                                                // ),
-                                              ],
-                                            ),
-                                            subtitle: timeline.events[i]
-                                                    .getDisplayEvent(timeline)
-                                                    .content
-                                                    .containsKey("displayname")
-                                                ? Text(
-                                                    "名称更改为${timeline.events[i].getDisplayEvent(timeline).content["displayname"]}")
-                                                : timeline.events[i]
-                                                            .getDisplayEvent(
-                                                                timeline)
-                                                            .body ==
-                                                        "m.room.avatar"
-                                                    ? const Text("更新了头像")
-                                                    : Text(timeline.events[i]
-                                                        .getDisplayEvent(
-                                                            timeline)
-                                                        .body)),
+                                              ),
+                                              // Text(
+                                              //   timeline
+                                              //       .events[i].originServerTs
+                                              //       .toIso8601String(),
+                                              //   style: const TextStyle(
+                                              //       fontSize: 10),
+                                              // ),
+                                            ],
+                                          ),
+                                          subtitle: timeline.events[i]
+                                                  .getDisplayEvent(timeline)
+                                                  .content
+                                                  .containsKey("displayname")
+                                              ? Text(
+                                                  "名称更改为${timeline.events[i].getDisplayEvent(timeline).content["displayname"]}",
+                                                  style: const TextStyle(
+                                                      color: Color.fromARGB(
+                                                          255, 156, 220, 240)),
+                                                )
+                                              : timeline.events[i]
+                                                          .getDisplayEvent(
+                                                              timeline)
+                                                          .body ==
+                                                      "m.room.avatar"
+                                                  ? const Text("更新了头像")
+                                                  : Markdown(
+                                                      data: timeline.events[i]
+                                                          .getDisplayEvent(
+                                                              timeline)
+                                                          .body,
+                                                      physics:
+                                                          const NeverScrollableScrollPhysics(),
+                                                      shrinkWrap: true,
+                                                    ),
+                                        ),
                                       ),
                                     ),
                         ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Container(
+                            height: 20,
+                            child: Text(StaticTimeline.timeline!.events[0].getDisplayEvent(StaticTimeline.timeline!).receipts.toString()),
+                          )
+                        ],
                       ),
                     ],
                   );

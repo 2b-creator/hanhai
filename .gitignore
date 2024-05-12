@@ -11,10 +11,10 @@
 migrate_working_dir/
 # builds
 windows/
-android/
 ios/
 linux/
 web/
+macos/
 # IntelliJ related
 *.iml
 *.ipr
