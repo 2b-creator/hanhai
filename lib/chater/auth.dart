@@ -130,13 +130,13 @@ class _ChangePasswdState extends State<ChangePasswdPage> {
       appBar: AppBar(
         title: const Text("修改密码"),
       ),
-      body: Center(
+      body: const Center(
           child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           TextField(
               decoration: InputDecoration(
-            border: const UnderlineInputBorder(),
+            border: UnderlineInputBorder(),
             labelText: "输入你的新密码",
           ))
         ],

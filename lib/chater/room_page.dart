@@ -1,8 +1,6 @@
 //import 'dart:js_interop';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:matrix/matrix.dart';
@@ -135,7 +133,7 @@ class _RegisterWidget extends State<RegisterPage> {
   final TextEditingController _usernameTextField = TextEditingController();
   bool _usernameInvalid = false;
   bool _emailFormatValitation = true;
-  bool _passwdStrong = true;
+  final bool _passwdStrong = true;
   final TextEditingController _passwordTextField = TextEditingController();
   bool _twoPwdMatch = false;
   bool _waitingForCallback = false;
@@ -239,7 +237,7 @@ class _RegisterWidget extends State<RegisterPage> {
                         EdgeInsets.only(left: textPadding, right: textPadding),
                     child: TextField(
                       decoration: InputDecoration(
-                          border: UnderlineInputBorder(),
+                          border: const UnderlineInputBorder(),
                           labelText: "输入你的电子邮箱地址",
                           errorText:
                               _emailFormatValitation ? null : "错误的电子邮箱地址"),
@@ -453,7 +451,7 @@ class RoomlistPage extends StatefulWidget {
 }
 
 class _RoomlistPageState extends State<RoomlistPage> {
-  int _hasreadedCounts = 0;
+  final int _hasreadedCounts = 0;
 
   void _logout() async {
     final client = Provider.of<Client>(context, listen: false);
@@ -734,7 +732,7 @@ class _SendRoomPageState extends State<RoomPage> {
                                     ),
                         ),
                       ),
-                      Container(
+                      SizedBox(
                         key: _avatarKey,
                         height: 20,
                         child: _sender
@@ -745,9 +743,7 @@ class _SendRoomPageState extends State<RoomPage> {
                                 itemBuilder: ((context, index, animation) =>
                                     ScaleTransition(
                                         scale: animation,
-                                        child: timeline.events[0].receipts
-                                                    .length ==
-                                                0
+                                        child: timeline.events[0].receipts.isEmpty
                                             ? null
                                             : CircleAvatar(
                                                 foregroundImage: NetworkImage(
