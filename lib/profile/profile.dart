@@ -4,6 +4,7 @@ import './../chater/room_page.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'dart:typed_data';
+import './../chater/auth.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key, required this.client});
@@ -78,7 +79,7 @@ class _changeAvatar extends State<ProfileEditorPage> {
 
   void _changePasswd(){
     //TODO
-    
+    Navigator.push(context, MaterialPageRoute(builder: (context) => const ChangePasswdPage()));
   }
 
   @override
