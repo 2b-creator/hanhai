@@ -9,8 +9,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:dio/dio.dart';
 import 'package:provider/provider.dart';
 import 'webs/web_body.dart';
-import 'profile/profile.dart';
-import 'screens/loading_screen.dart';
 import 'screens/welcome_screen.dart';
 import 'screens/chat_screen.dart';
 import 'screens/message_screen.dart';
@@ -118,13 +116,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   WebHomeWidget webHomeWidget = const WebHomeWidget();
   late RoomInterface roomInterface;
-  late ProfilePage profilePage;
+  late ProfileScreen profileScreen;
   @override
   void initState() {
     super.initState();
     // 在 initState 中初始化 roomInterface，以确保可以访问 widget.client
     roomInterface = RoomInterface(client: widget.client);
-    profilePage = ProfilePage(client: widget.client);
+    profileScreen = ProfileScreen(client: widget.client);
   }
 
   @override
@@ -144,7 +142,7 @@ class _MyHomePageState extends State<MyHomePage> {
           });
         },
       ),
-      body: <Widget>[webHomeWidget, roomInterface, profilePage][currentIndex],
+      body: <Widget>[webHomeWidget, roomInterface, profileScreen][currentIndex],
     );
   }
 }

@@ -46,7 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.of(context).pushNamedAndRemoveUntil("/chat", (route) => false);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("You are successfully logged in."),
+          content: Text("成功登录到瀚海"),
           backgroundColor: Colors.green,
         ),
       );
@@ -94,20 +94,20 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       child: Column(
                         children: [
-                          Row(
+                          const Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                              InkWell(
-                                // onTap: () => Navigator.pushNamedAndRemoveUntil(
-                                //   context,
-                                //   "/welcome",
-                                //   (route) => false,
-                                // ),
-                                onTap: () => Navigator.pop(context),
-                                child: const Icon(Icons.arrow_back, size: 30),
-                              ),
-                              const Text(
-                                "Login to Your Account",
+                              // InkWell(
+                              //   // onTap: () => Navigator.pushNamedAndRemoveUntil(
+                              //   //   context,
+                              //   //   "/welcome",
+                              //   //   (route) => false,
+                              //   // ),
+                              //   onTap: () => Navigator.pop(context),
+                              //   child: const Icon(Icons.arrow_back, size: 30),
+                              // ),
+                              Text(
+                                "登录你的瀚海账号",
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 24.0,
@@ -121,7 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           TextField(
                             controller: usernameController,
                             decoration: const InputDecoration(
-                              hintText: "Username",
+                              hintText: "用户名",
                             ),
                           ),
                           const Gap(10),
@@ -129,7 +129,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             controller: passwordController,
                             obscureText: true,
                             decoration: const InputDecoration(
-                              hintText: "Password",
+                              hintText: "密码",
                             ),
                           ),
                           const Gap(30),
@@ -139,13 +139,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                   passwordController.text.trim().isEmpty) {
                                 errorDialog(
                                   context: context,
-                                  content: "Please fill in the blanks.",
+                                  content: "请填充此区域",
                                 );
                               } else {
                                 loginUser();
                               }
                             },
-                            child: const Text("Login"),
+                            child: const Text("登录"),
                           ),
                         ],
                       ),

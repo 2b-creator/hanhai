@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart';
-import './../chater/room_page.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'dart:typed_data';
 import './../chater/auth.dart';
+import './../screens/welcome_screen.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key, required this.client});
@@ -34,7 +34,7 @@ class _ProfileWidgetState extends State<ProfilePage> {
     return Scaffold(
       body: _isLogged
           ? ProfileEditorPage(client: widget.client)
-          : LoginPageWidget(onLoginSuccess: updateIsLogged),
+          : const WelcomeScreen(),
     );
   }
 }

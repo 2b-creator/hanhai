@@ -7,7 +7,6 @@ import 'package:collection/collection.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 import 'package:matrix/matrix.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
 import '../core/storage.dart';
 import '../core/variables.dart';

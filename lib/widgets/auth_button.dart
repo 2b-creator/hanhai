@@ -16,7 +16,7 @@ class AuthButton extends StatelessWidget {
           child: ElevatedButton(
             onPressed: () => Navigator.pushNamed(
               context,
-              title == "Register" ? "/register" : "/login",
+              title == "注册" ? "/register" : "/login",
             ),
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(

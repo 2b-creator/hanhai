@@ -8,6 +8,7 @@ import '../core/storage.dart';
 import '../services/api.dart';
 import '../utils/dialogs.dart';
 import '../widgets/loading_indicator.dart';
+import '../chater/auth.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -18,9 +19,15 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   bool loading = false;
+  bool _usernameInvalid = true;
+  bool _emailFormatValitation = true;
+  bool _passwdMatch = true;
+
   var usernameController = TextEditingController();
   var passwordController = TextEditingController();
   var passwordConfirmController = TextEditingController();
+  var emailControlller = TextEditingController();
+  AuthUsernameOrPasswd authUsernameOrPasswd = AuthUsernameOrPasswd();
 
   registerUser() async {
     setState(() {
@@ -79,7 +86,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     Expanded(child: Container()),
                     Container(
                       width: double.infinity,
-                      height: 341,
+                      height: 440,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 50,
                         vertical: 35,
@@ -93,19 +100,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       child: Column(
                         children: [
-                          Row(
+                          const Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                              InkWell(
-                                onTap: () => Navigator.pushNamedAndRemoveUntil(
-                                  context,
-                                  "/welcome",
-                                  (route) => false,
-                                ),
-                                child: const Icon(Icons.arrow_back, size: 30),
-                              ),
-                              const Text(
-                                "Register to Chat App",
+                              // InkWell(
+                              //   onTap: () => Navigator.pushNamedAndRemoveUntil(
+                              //     context,
+                              //     "/welcome",
+                              //     (route) => false,
+                              //   ),
+                              //   child: const Icon(Icons.arrow_back, size: 30),
+                              // ),
+                              Text(
+                                "注册一个瀚海账号",
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 24.0,
@@ -118,25 +125,53 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           const Gap(10),
                           TextField(
                             controller: usernameController,
-                            decoration: const InputDecoration(
-                              hintText: "Username",
-                            ),
+                            onChanged: (value) {
+                              setState(() {
+                                _usernameInvalid =
+                                    authUsernameOrPasswd.isValidUsername(value);
+                              });
+                            },
+                            decoration: InputDecoration(
+                                hintText: "用户名",
+                                errorText: _usernameInvalid
+                                    ? null
+                                    : "用户名应当以小写字母开头，且只能包含数字，下\n划线和小写字母"),
+                          ),
+                          const Gap(10),
+                          TextField(
+                            controller: emailControlller,
+                            onChanged: (value) {
+                              setState(() {
+                                _emailFormatValitation =
+                                    authUsernameOrPasswd.isValidEmail(value);
+                              });
+                            },
+                            decoration: InputDecoration(
+                                hintText: "邮箱",
+                                errorText:
+                                    _emailFormatValitation ? null : "不正确的邮箱地址"),
                           ),
                           const Gap(10),
                           TextField(
                             controller: passwordController,
                             obscureText: true,
                             decoration: const InputDecoration(
-                              hintText: "Password",
+                              hintText: "密码",
                             ),
                           ),
                           const Gap(10),
                           TextField(
                             controller: passwordConfirmController,
                             obscureText: true,
-                            decoration: const InputDecoration(
-                              hintText: "Confirm Password",
-                            ),
+                            onChanged: (value) {
+                              setState(() {
+                                _passwdMatch =
+                                    (passwordController.text == value);
+                              });
+                            },
+                            decoration: InputDecoration(
+                                hintText: "确认密码",
+                                errorText: _passwdMatch ? null : "两次密码不匹配"),
                           ),
                           const Gap(15),
                           ElevatedButton(
@@ -145,7 +180,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   passwordConfirmController.text) {
                                 errorDialog(
                                   context: context,
-                                  content: "Passwords not match!",
+                                  content: "两次密码不匹配",
                                 );
                               } else if (usernameController.text
                                       .trim()
@@ -156,13 +191,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       .isEmpty) {
                                 errorDialog(
                                   context: context,
-                                  content: "Please fill in the blanks.",
+                                  content: "请填写该字段",
                                 );
                               } else {
                                 registerUser();
                               }
                             },
-                            child: const Text("Register"),
+                            child: const Text("注册"),
                           ),
                         ],
                       ),

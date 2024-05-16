@@ -27,7 +27,7 @@ class _MessageScreenState extends State<MessageScreen> {
   final GlobalKey<AnimatedListState> _avatarKey =
       GlobalKey<AnimatedListState>();
   int room_index = 0;
-  bool _sender = true;
+  final bool _sender = true;
 
   // Kullanicinin bu sayfaya erisimi yoksa welcomeScreen'e gonderiyoruz.
   getUser() async {
@@ -202,7 +202,7 @@ class _MessageScreenState extends State<MessageScreen> {
                                               leading:
                                                   timeline.events[i].senderId ==
                                                           widget.client.userID
-                                                      ? Container(
+                                                      ? const SizedBox(
                                                           width: 20,
                                                           height: 20,
                                                         )

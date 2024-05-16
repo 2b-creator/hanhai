@@ -1,15 +1,10 @@
 //import 'dart:js_interop';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:matrix/matrix.dart';
-import 'package:provider/provider.dart';
-import 'auth.dart';
-import 'package:dio/dio.dart';
 
 import './../screens/chat_screen.dart';
-import 'welcome.dart';
+import '../screens/welcome_screen.dart';
 
 class HttpHandlerIm {
   static String host = "https://matrix.phosphorus.top";

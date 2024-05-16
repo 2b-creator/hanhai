@@ -27,7 +27,7 @@ class WelcomeScreen extends StatelessWidget {
               Expanded(child: Container()),
               Container(
                 width: double.infinity,
-                height: 430,
+                height: 330,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 50,
                   vertical: 35,
@@ -42,7 +42,7 @@ class WelcomeScreen extends StatelessWidget {
                 child: const Column(
                   children: [
                     Text(
-                      "Enjoy the new experience of chatting with global friends",
+                      "你尚未登录瀚海",
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 24.0,
@@ -52,7 +52,7 @@ class WelcomeScreen extends StatelessWidget {
                     ),
                     Gap(10),
                     Text(
-                      "Connect people arround the world for free",
+                      "注册一个新的瀚海账户或登录到瀚海",
                       style: TextStyle(
                         color: Color.fromARGB(255, 170, 170, 170),
                         fontSize: 16.0,
@@ -60,9 +60,9 @@ class WelcomeScreen extends StatelessWidget {
                       textAlign: TextAlign.center,
                     ),
                     Gap(30),
-                    AuthButton(title: "Register"),
+                    AuthButton(title: "注册"),
                     Gap(10),
-                    AuthButton(title: "Login"),
+                    AuthButton(title: "登录"),
                   ],
                 ),
               ),

@@ -59,6 +59,8 @@ dependencies:
   flutter_secure_storage: ^9.2.0
   # flutter_openssl_crypto: ^0.3.0
 
+  collection: any
+  intl: any
 dev_dependencies:
   flutter_test:
     sdk: flutter
