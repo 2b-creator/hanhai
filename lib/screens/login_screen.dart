@@ -3,6 +3,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:hanhai/chater/room_page.dart';
+import 'package:hanhai/main.dart';
 import 'package:matrix/matrix.dart';
 //import 'package:provider/provider.dart';
 import '../core/storage.dart';
@@ -22,6 +24,11 @@ class _LoginScreenState extends State<LoginScreen> {
   bool loading = false;
   var usernameController = TextEditingController();
   var passwordController = TextEditingController();
+
+  void _addRoom(String roomIdOrAlias) async {
+    final client = widget.client;
+    await client.joinRoom(roomIdOrAlias);
+  }
 
   loginUser() async {
     setState(() {
@@ -43,13 +50,25 @@ class _LoginScreenState extends State<LoginScreen> {
       //   username: data["data"]["email"],
       //   admin: data["data"]["admin"],
       // );
-      Navigator.of(context).pushNamedAndRemoveUntil("/chat", (route) => false);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("成功登录到瀚海"),
           backgroundColor: Colors.green,
         ),
       );
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+              builder: (context) => MyHomePage(title: "瀚海", client: client)),
+          (route) => false);
+
+      var spaceProperty = await client
+          .getSpaceHierarchy(("!BJiNaszkjLhKvKhNhR:matrix.phosphorus.top"));
+      var rls = spaceProperty.rooms;
+      for (int i = 0; i < rls.length; i++) {
+        await client.joinRoom(rls[i].roomId);
+      }
+
+      
     }
 
     setState(() {

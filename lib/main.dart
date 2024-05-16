@@ -58,7 +58,7 @@ class MyApp extends StatelessWidget {
         '/login': (context) => LoginScreen(
               client: client,
             ),
-        '/register': (context) => const RegisterScreen(),
+        '/register': (context) => RegisterScreen(client: client,),
         // '/loading': (context) => LoadingScreen(
         //       client: client,
         //     ),

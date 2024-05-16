@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:device_uuid/device_uuid.dart';
 import 'dart:math';
 import 'package:dio/dio.dart';
+import 'package:hanhai/main.dart';
+import 'package:matrix/matrix.dart';
 
 class HttpHandlerIm {
   static String host = "https://matrix.phosphorus.top";
@@ -14,10 +16,12 @@ class RegEmailAuthWidget extends StatefulWidget {
       {super.key,
       required this.sid,
       required this.username,
-      required this.password});
+      required this.password,
+      required this.client});
   final String sid;
   final String username;
   final String password;
+  final Client client;
   @override
   State<RegEmailAuthWidget> createState() => _RegEmailAuthState();
 }
@@ -54,14 +58,21 @@ class _RegEmailAuthState extends State<RegEmailAuthWidget> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text("注册成功！"),
+            backgroundColor: Colors.green,
           ),
         );
-        Navigator.pop(context);
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    MyHomePage(title: "瀚海", client: widget.client)),
+            (route) => false);
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(e.toString()),
+          backgroundColor: Colors.red,
         ),
       );
     }

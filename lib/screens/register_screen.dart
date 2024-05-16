@@ -3,6 +3,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:hanhai/main.dart';
+import 'package:matrix/matrix.dart';
 
 import '../core/storage.dart';
 import '../services/api.dart';
@@ -11,7 +13,8 @@ import '../widgets/loading_indicator.dart';
 import '../chater/auth.dart';
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+  const RegisterScreen({super.key, required this.client});
+  final Client client;
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
@@ -28,7 +31,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   var passwordConfirmController = TextEditingController();
   var emailControlller = TextEditingController();
   AuthUsernameOrPasswd authUsernameOrPasswd = AuthUsernameOrPasswd();
-
   registerUser() async {
     setState(() {
       loading = true;
@@ -40,22 +42,34 @@ class _RegisterScreenState extends State<RegisterScreen> {
     var data = await api.registerUserService(
       username: usernameController.text.trim(),
       password: passwordController.text.trim(),
+      email: emailControlller.text.trim(),
     );
 
     if (data is DioException) {
-      errorDialog(context: context, content: data.response?.data["data"]);
+      //errorDialog(context: context, content: );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: data.response?.data["data"]));
     } else {
-      await storage.saveUser(
-        username: data["data"]["email"],
-        admin: data["data"]["admin"],
-      );
-      Navigator.of(context).pushNamedAndRemoveUntil("/chat", (route) => false);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("You are successfully signed up."),
+          content: Text("一封确认邮件已经发往你的邮箱，请查收后继续"),
           backgroundColor: Colors.green,
         ),
       );
+      // await storage.saveUser(
+      //   username: data["data"]["email"],
+      //   admin: data["data"]["admin"],
+      // );
+      // Navigator.of(context).pushAndRemoveUntil(
+      //     MaterialPageRoute(
+      //         builder: (context) =>
+      //             MyHomePage(title: "瀚海", client: widget.client)),
+      //     (route) => false);
+      Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => RegEmailAuthWidget(
+              sid: data,
+              username: usernameController.text.trim(),
+              password: passwordController.text.trim(),client: widget.client,)));
     }
 
     setState(() {
