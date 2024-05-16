@@ -361,21 +361,21 @@ class _MessageScreenState extends State<MessageScreen> {
                         ),
                         VerticalDivider(color: Colors.black.withOpacity(0.2)),
                         const Gap(15),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.mood,
-                              size: 25,
-                              color: Colors.black.withOpacity(0.5),
-                            ),
-                            const Gap(17),
-                            Icon(
-                              Icons.photo_camera,
-                              size: 25,
-                              color: Colors.black.withOpacity(0.5),
-                            ),
-                          ],
-                        ),
+                        // Row(
+                        //   children: [
+                        //     Icon(
+                        //       Icons.mood,
+                        //       size: 25,
+                        //       color: Colors.black.withOpacity(0.5),
+                        //     ),
+                        //     const Gap(17),
+                        //     Icon(
+                        //       Icons.photo_camera,
+                        //       size: 25,
+                        //       color: Colors.black.withOpacity(0.5),
+                        //     ),
+                        //   ],
+                        // ),
                       ],
                     ),
                   ),

@@ -285,7 +285,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 Gap(15),
                 Text(
-                  "Search message...",
+                  "搜索信息",
                   style: TextStyle(
                     fontSize: 18,
                     color: Color.fromARGB(255, 128, 128, 128),

@@ -1,9 +1,13 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import '../screens/welcome_screen.dart';
 import 'package:matrix/matrix.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 import '../utils/dialogs.dart';
 import 'package:hanhai/main.dart';
 
@@ -19,13 +23,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
   int i = 0;
   String? user = "default";
   Uri? url;
+  void _changeAvatarChoser() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? response = await picker.pickImage(source: ImageSource.gallery);
+    if (response==null) {
+      return;
+    }
+    //final List<XFile>? files = response.files;
+    String filePath = response.path;
+    Uint8List uint8list = await File(filePath).readAsBytes();
+    widget.client.setAvatar(MatrixImageFile(bytes: uint8list, name: widget.client.clientName.toString()));
+  }
 
   logout() async {
     questionDialog(
       context: context,
-      title: "Logout",
-      content: "Are you sure want to logout from your account?",
+      title: "登出",
+      content: "你确定要登出你的账户吗",
       func: () async {
+        
         final client = widget.client;
         await client.logout();
         Navigator.of(context).pushAndRemoveUntil(
@@ -36,7 +52,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         );
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text("You are successfully logged out."),
+            content: Text("你已成功登出"),
             backgroundColor: Colors.green,
           ),
         );
@@ -88,7 +104,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             appBar: AppBar(
               title: const Center(
                 child: Text(
-                  "My Profile",
+                  "个人中心",
                 ),
               ),
             ),
@@ -128,20 +144,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
                     ),
+                    Center(child: TextButton(onPressed: _changeAvatarChoser, child: const Text("更改头像")),),
                     const Gap(20),
                     const Divider(thickness: 2, endIndent: 15, indent: 15),
                     const Gap(20),
-                    Text(
-                      user!,
+                    Center(child: Container(width: 250,child: TextField(
+                      textAlign: TextAlign.center,
+                      decoration: InputDecoration(hintText: user!),
+                      onSubmitted: (value) async {
+                        await widget.client.setDisplayName(widget.client.userID!, value);
+                      },
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 20,
                       ),
-                    ),
-                    Text(
-                      "@${user!}",
-                      style: const TextStyle(fontSize: 15),
-                    ),
+                    ),),),
+                    // Text(
+                    //   "@${widget.client.userID!}",
+                    //   style: const TextStyle(fontSize: 15),
+                    // ),
                     const Gap(20),
                     const Divider(thickness: 2, endIndent: 15, indent: 15),
                     const Gap(20),
@@ -214,7 +235,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             Icon(Icons.logout_outlined, size: 28),
                             Gap(10),
                             Text(
-                              "Log Out",
+                              "登出",
                               style: TextStyle(fontSize: 20),
                             ),
                           ],
