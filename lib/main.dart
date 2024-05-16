@@ -10,6 +10,13 @@ import 'package:dio/dio.dart';
 import 'package:provider/provider.dart';
 import 'webs/web_body.dart';
 import 'profile/profile.dart';
+import 'screens/loading_screen.dart';
+import 'screens/welcome_screen.dart';
+import 'screens/chat_screen.dart';
+import 'screens/message_screen.dart';
+import 'screens/profile_screen.dart';
+import 'screens/login_screen.dart';
+import 'screens/register_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,6 +46,25 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: '瀚海',
+      routes: {
+        '/welcome': (context) => const WelcomeScreen(),
+        '/chat': (context) => ChatScreen(
+              client: client,
+            ),
+        '/message': (context) => MessageScreen(
+              client: client,
+            ),
+        '/profile': (context) => ProfileScreen(
+              client: client,
+            ),
+        '/login': (context) => LoginScreen(
+              client: client,
+            ),
+        '/register': (context) => const RegisterScreen(),
+        // '/loading': (context) => LoadingScreen(
+        //       client: client,
+        //     ),
+      },
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
