@@ -80,6 +80,7 @@ class _MessageScreenState extends State<MessageScreen> {
     room_index = index;
     _timelineFuture = widget.client.rooms[index].getTimeline(
       onInsert: (insertID) {
+        _listKey.currentState?.insertItem(insertID);
         _listKey.currentState?.setState(() {});
       },
       onUpdate: () {

@@ -148,7 +148,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     const Gap(20),
                     const Divider(thickness: 2, endIndent: 15, indent: 15),
                     const Gap(20),
-                    Center(child: Container(width: 250,child: TextField(
+                    Center(child: SizedBox(width: 250,child: TextField(
                       textAlign: TextAlign.center,
                       decoration: InputDecoration(hintText: user!),
                       onSubmitted: (value) async {

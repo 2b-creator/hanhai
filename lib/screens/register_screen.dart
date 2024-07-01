@@ -3,7 +3,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:hanhai/main.dart';
 import 'package:matrix/matrix.dart';
 
 import '../core/storage.dart';

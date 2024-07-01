@@ -15,6 +15,8 @@ import 'screens/message_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/register_screen.dart';
+import 'subscribe/survey.dart';
+import 'books/books_updated.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -99,6 +101,8 @@ class AppOptions extends _MyHomePageState {
   static BuildContext? theContext;
   static String url = "url";
   static bool canPopValue = false;
+  static bool webHomeLoading = true;
+  static int times = 0;
   static Client? client;
   Dio dio = Dio();
   void changeCanPopState(bool isTrue) {
@@ -113,9 +117,10 @@ class AppOptions extends _MyHomePageState {
 class _MyHomePageState extends State<MyHomePage> {
   final lastPopTime = DateTime.now();
   int currentIndex = 0;
-
+  BookShelves bookShelves = const BookShelves();
   WebHomeWidget webHomeWidget = const WebHomeWidget();
   late RoomInterface roomInterface;
+  SurveyWidgets surveySelect = const SurveyWidgets();
   late ProfileScreen profileScreen;
   @override
   void initState() {
@@ -132,8 +137,8 @@ class _MyHomePageState extends State<MyHomePage> {
       bottomNavigationBar: NavigationBar(
         destinations: const [
           NavigationDestination(icon: Icon(Icons.home), label: "主页"),
-          NavigationDestination(icon: Icon(Icons.chat), label: "社区"),
-          NavigationDestination(icon: Icon(Icons.person), label: "用户中心"),
+          NavigationDestination(icon: Icon(Icons.shopping_bag), label: "订阅"),
+          NavigationDestination(icon: Icon(Icons.book), label: "书库"),
         ],
         selectedIndex: currentIndex,
         onDestinationSelected: (int index) {
@@ -142,7 +147,7 @@ class _MyHomePageState extends State<MyHomePage> {
           });
         },
       ),
-      body: <Widget>[webHomeWidget, roomInterface, profileScreen][currentIndex],
+      body: <Widget>[webHomeWidget, surveySelect, bookShelves][currentIndex],
     );
   }
 }

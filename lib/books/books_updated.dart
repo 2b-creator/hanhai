@@ -1,28 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'dart:io';
-import 'package:flutter/services.dart';
 import 'package:hanhai/pdf_viewer.dart';
 import 'package:path_provider/path_provider.dart';
 import '../main.dart';
 
-class WebHomeWidget extends StatefulWidget {
-  const WebHomeWidget({super.key});
+class BookShelves extends StatefulWidget {
+  const BookShelves({super.key});
+
   @override
-  State<WebHomeWidget> createState() => _WebHomeState();
+  State<BookShelves> createState() => _BookShelvesState();
 }
 
-class _WebHomeState extends State<WebHomeWidget> {
-  bool canPopValue = false;
-  static final GlobalKey _bodyKey = GlobalKey();
-  String uri = "https://hanhai.jygz.top/";
-
+class _BookShelvesState extends State<BookShelves> {
   final controller = WebViewController()
-    ..loadRequest(Uri.parse("https://hanhai.jygz.top/"))
+    ..loadRequest(Uri.parse("https://hanhai.jygz.top/upload/books.html"))
     ..setJavaScriptMode(JavaScriptMode.unrestricted)
     ..clearCache()
     ..enableZoom(false);
-
   @override
   Widget build(BuildContext context) {
     controller.setNavigationDelegate(NavigationDelegate(
@@ -67,31 +62,13 @@ class _WebHomeState extends State<WebHomeWidget> {
     ));
     return Scaffold(
       appBar: AppBar(
-        key: _bodyKey,
-        title: const Text("主页"),
+        title: const Text("书库"),
       ),
-      body: PopScope(
-        onPopInvoked: (didPop) {
-          Future<bool> canBack = controller.canGoBack();
-          canBack.then((value) {
-            if (value) {
-              controller.goBack();
-            } else {
-              SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-            }
-          });
-        },
-        canPop: canPopValue,
-        child: Scaffold(
-          body: AppOptions.webHomeLoading
-              ? const Center(
-                  child: CircularProgressIndicator(),
-                )
-              : WebViewWidget(
-                  controller: controller,
-                ),
-        ),
-      ),
+      body: AppOptions.webHomeLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : WebViewWidget(controller: controller),
     );
   }
 }
